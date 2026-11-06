@@ -27,9 +27,9 @@ export async function GET(
     }
   }
 
-  const requestedFile = path.join(UPLOADS_DIR, ...pathSegments);
-  const resolvedPath = path.resolve(requestedFile);
-  const resolvedUploadsDir = path.resolve(UPLOADS_DIR);
+  const requestedFile = path.join(/*turbopackIgnore: true*/ UPLOADS_DIR, ...pathSegments);
+  const resolvedPath = path.resolve(/*turbopackIgnore: true*/ requestedFile);
+  const resolvedUploadsDir = path.resolve(/*turbopackIgnore: true*/ UPLOADS_DIR);
 
   // Strict check: file must reside strictly inside UPLOADS_DIR
   if (!resolvedPath.startsWith(resolvedUploadsDir)) {

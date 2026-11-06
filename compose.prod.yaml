@@ -1,7 +1,9 @@
 services:
   db:
     restart: unless-stopped
-    ports: []
+    ports: [] # PostgreSQL internal only, not exposed to internet
+    security_opt:
+      - no-new-privileges:true
     deploy:
       resources:
         limits:
@@ -9,13 +11,20 @@ services:
 
   migrate:
     restart: "no"
+    security_opt:
+      - no-new-privileges:true
 
   web:
     build:
       context: .
       target: runner
     restart: unless-stopped
-    ports: []
+    ports: [] # Handled strictly through Caddy reverse proxy
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    security_opt:
+      - no-new-privileges:true
     deploy:
       resources:
         limits:
@@ -33,6 +42,8 @@ services:
       - caddy_config:/config
     depends_on:
       - web
+    security_opt:
+      - no-new-privileges:true
     deploy:
       resources:
         limits:

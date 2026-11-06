@@ -62,8 +62,8 @@ export async function processAndSaveImage(
   }
 
   // Ensure uploads directory exists
-  if (!fs.existsSync(UPLOADS_DIR)) {
-    fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+  if (!fs.existsSync(/*turbopackIgnore: true*/ UPLOADS_DIR)) {
+    fs.mkdirSync(/*turbopackIgnore: true*/ UPLOADS_DIR, { recursive: true });
   }
 
   // Process image with sharp: strips EXIF/GPS, re-encodes to clean WebP

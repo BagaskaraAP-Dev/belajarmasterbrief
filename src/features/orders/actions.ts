@@ -3,6 +3,8 @@
 import { db } from "@/lib/db";
 import { getStoreSettings } from "@/features/settings/queries";
 import { buildWhatsAppUrl, cleanPhoneNumber } from "@/lib/whatsapp";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import { headers } from "next/headers";
 import { z } from "zod";
 
 const checkoutSchema = z.object({
@@ -39,6 +41,24 @@ export async function createOrderAction(
   if (!parsed.success) {
     const errorMsg = parsed.error.issues[0]?.message || "Data formulir tidak valid.";
     return { success: false, error: errorMsg };
+  }
+
+  // Rate Limiting per IP (Brief: Checkout publik dibatasi rate limit per IP + honeypot)
+  let ip = "127.0.0.1";
+  try {
+    const reqHeaders = await headers();
+    ip = getClientIp(reqHeaders);
+  } catch {
+    // Fallback if executed outside request context
+  }
+
+  const rl = rateLimit(`checkout:${ip}`, 10, 10 * 60 * 1000);
+  if (!rl.success) {
+    return {
+      success: false,
+      error:
+        "Terlalu banyak permintaan pemesanan dari perangkat Anda. Silakan tunggu beberapa saat.",
+    };
   }
 
   const { customerName, customerPhone, address, note, items } = parsed.data;

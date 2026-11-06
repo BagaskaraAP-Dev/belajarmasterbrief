@@ -44,7 +44,7 @@
     "@types/react-dom": "19.3.0",
     "dotenv": "^17.4.2",
     "eslint": "^9.21.0",
-    "postcss": "8.5.3",
+    "postcss": "^8.5.13",
     "prettier": "3.9.10",
     "prisma": "7.10.1",
     "tailwindcss": "4.3.4",
@@ -52,6 +52,18 @@
     "typescript": "5.9.3",
     "typescript-eslint": "^8.25.0",
     "vitest": "^5.1.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "prisma",
+      "esbuild",
+      "sharp"
+    ],
+    "overrides": {
+      "postcss": ">=8.5.12"
+    }
   }
 }
 

@@ -10,6 +10,16 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
+  rateLimit: {
+    window: 15 * 60, // 15 minutes
+    max: 100,
+    customRules: {
+      "/sign-in/email": {
+        window: 15 * 60,
+        max: 5, // Brief: 5 percobaan / 15 menit per IP
+      },
+    },
+  },
   session: {
     expiresIn: 60 * 60 * 24 * 7, // 7 days (Brief: sesi kedaluwarsa 7 hari)
     updateAge: 60 * 60 * 24,

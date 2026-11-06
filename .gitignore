@@ -33,6 +33,12 @@ test-results/
 playwright-report/
 coverage/
 
+# TypeScript cache
+*.tsbuildinfo
+
+# Backups
+backups/
+
 # OS and IDE files
 .DS_Store
 Thumbs.db
