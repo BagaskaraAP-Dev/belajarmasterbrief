@@ -51,4 +51,28 @@ Karena variabel bisnis di Section 2 belum diisi pemilik:
   6. `runner`: image produksi minimal tanpa devDependencies, user non-root `nodejs:nextjs` (uid 1001), `output: "standalone"`.
 - **Jaringan & Akses**: Hanya Caddy (port 80/443) yang terbuka ke internet pada lingkungan produksi. Database PostgreSQL dan web server internal tidak diekspos ke publik di produksi.
 - **Upload Directory**: Disimpan pada volume Docker `uploads` di `/app/uploads`, disajikan melalui route aman `/api/media/[...path]` dengan validasi magic bytes, re-encode sharp (hapus metadata EXIF/GPS), dan proteksi path traversal.
-- **Proteksi Admin**: `src/proxy.ts` (Next.js 16) untuk redirect layer pertama + verifikasi sesi Better Auth di setiap Server Action / API route (`requireAdmin()`).
+- **Proteksi Admin**: `src/proxy.ts` (Next.js 16) untuk redirect layer pertama + verifikasi sesi Better Auth di setiap Server Action / API route (`requireAdmin()`). Catatan penting Next.js 16: file `src/middleware.ts` tidak boleh ada bersamaan dengan `src/proxy.ts` agar tidak terjadi error bentrok konvensi.
+
+---
+
+## 4. Keamanan & Hardening (Milestone 6)
+
+- **HTTP Security Headers & CSP**: Diterapkan melalui `next.config.ts` untuk seluruh rute (`/:path*`), mencakup Content Security Policy (CSP), Strict-Transport-Security (HSTS), X-Frame-Options: DENY, X-Content-Type-Options: nosniff, Referrer-Policy, dan Permissions-Policy.
+- **Rate Limiting**:
+  - Login Admin: Dikonfigurasi di `src/lib/auth.ts` dengan batas maksimal 5 percobaan per 15 menit per IP.
+  - Checkout Publik: Dilindungi in-memory sliding window rate limiter di `src/lib/rate-limit.ts` (maksimal 10 pesanan per 10 menit per IP) dan validasi honeypot field (`hp_website`) tak kasat mata di form keranjang untuk menangkal bot spam.
+- **Kepatuhan Privasi Data (UU PDP)**: Disediakan Server Action `deleteOldOrdersAction()` dan tombol pembersihan pada dashboard admin untuk menghapus riwayat pesanan pelanggan yang berusia lebih dari 90 hari.
+- **Keamanan Media & Isolasi Kontainer**:
+  - Validasi magic bytes (JPEG/PNG/WebP), penghapusan metadata EXIF/GPS via Sharp, pembatasan ukuran maksimal, penolakan path traversal (`..`, `/`, `\`).
+  - Runner container berjalan sebagai user non-root (`nextjs:1001`), root filesystem diset `read_only: true`, direktori tulis temporer dialokasikan ke tmpfs (`/tmp:rw,noexec,nosuid,size=64m`), dan volume `uploads` dimount terisolasi.
+
+---
+
+## 5. Produksi & Operasional (Milestone 7)
+
+- **Reverse Proxy Caddy**: Menangani terminate SSL/TLS otomatis dari Let's Encrypt / ZeroSSL, kompresi gzip dan zstd, serta memforward lalu lintas secara internal ke service `web:3000`.
+- **Pencadangan & Pemulihan (Backup & Restore)**:
+  - `scripts/backup.sh`: Mengompresi dump PostgreSQL (`pg_dump` gzip) dan mengarsipkan folder upload media produk, dengan rotasi retensi 7 backup terakhir.
+  - `scripts/restore.sh`: Mendukung pemulihan database dari file `backup_*.sql.gz` dan sinkronisasi kembali folder media dari file `uploads_*.tar.gz`.
+- **CI / CD Pipeline**: Dikonfigurasi pada `.github/workflows/ci.yml` untuk menjalankan linting ESLint, typecheck TypeScript, Vitest unit test, Next.js build, serta verifikasi build target image Docker runner.
+- **Dokumentasi Deployment**: Panduan instalasi dan deployment lengkap langkah demi langkah dari nol ke VPS Ubuntu dicatat di `docs/DEPLOY.md`, lengkap dengan checklist pasca-deploy (Google Search Console, sitemap, Google Business Profile).

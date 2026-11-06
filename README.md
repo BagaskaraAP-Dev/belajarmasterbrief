@@ -23,8 +23,17 @@ Aplikasi website UMKM modern full-stack berbasis Next.js 16 (App Router), Postgr
 | **Jalankan E2E Test** | `docker compose run --rm web pnpm test:e2e` |
 | **Lint & Typecheck** | `docker compose run --rm web pnpm lint && docker compose run --rm web pnpm typecheck` |
 | **Jalankan Produksi (Caddy + SSL)** | `docker compose -f compose.yaml -f compose.prod.yaml up -d --build` |
-| **Backup Database** | `./scripts/backup.sh` |
-| **Restore Database** | `./scripts/restore.sh <path_file.sql.gz>` |
+| **Backup Database & Uploads** | `./scripts/backup.sh` |
+| **Restore Database & Uploads** | `./scripts/restore.sh <path_file.sql.gz> [path_uploads.tar.gz]` |
+
+---
+
+## Panduan Deployment & Produksi
+
+Untuk panduan deployment lengkap ke VPS Ubuntu menggunakan Caddy HTTPS otomatis, konfigurasi cron backup harian, dan checklist pasca-deploy (Google Search Console & Google Business Profile), silakan baca:
+- [Panduan Deployment VPS (docs/DEPLOY.md)](file:///C:/Users/User/OneDrive/Desktop/belajarmasterbrief/docs/DEPLOY.md)
+- [Catatan Keputusan Arsitektur (docs/DECISIONS.md)](file:///C:/Users/User/OneDrive/Desktop/belajarmasterbrief/docs/DECISIONS.md)
+- [Master Spesifikasi & Brief (docs/BRIEF.md)](file:///C:/Users/User/OneDrive/Desktop/belajarmasterbrief/docs/BRIEF.md)
 
 ---
 
