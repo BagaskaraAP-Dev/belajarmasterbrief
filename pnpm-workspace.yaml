@@ -1,0 +1,9 @@
+minimumReleaseAge: 0
+minimumReleaseAgeExclude:
+  - "*"
+onlyBuiltDependencies:
+  - "@prisma/client"
+  - "@prisma/engines"
+  - "prisma"
+  - "esbuild"
+  - "sharp"

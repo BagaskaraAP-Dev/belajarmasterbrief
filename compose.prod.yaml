@@ -1,0 +1,43 @@
+services:
+  db:
+    restart: unless-stopped
+    ports: []
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  migrate:
+    restart: "no"
+
+  web:
+    build:
+      context: .
+      target: runner
+    restart: unless-stopped
+    ports: []
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - web
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+
+volumes:
+  caddy_data: {}
+  caddy_config: {}

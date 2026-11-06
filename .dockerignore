@@ -1,0 +1,13 @@
+.git
+.github
+node_modules
+.pnpm-store
+.next
+uploads
+*.md
+!docs/BRIEF.md
+.env
+.env.local
+test-results
+playwright-report
+coverage
