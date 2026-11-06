@@ -59,9 +59,12 @@ export function generateWhatsAppMessage(order: OrderWhatsAppPayload): string {
 
 export function buildWhatsAppUrl(
   phone: string,
-  order: OrderWhatsAppPayload
+  content: OrderWhatsAppPayload | string
 ): string {
   const cleanedPhone = cleanPhoneNumber(phone);
-  const message = generateWhatsAppMessage(order);
+  const message =
+    typeof content === "string"
+      ? content
+      : generateWhatsAppMessage(content);
   return `https://wa.me/${cleanedPhone}?text=${encodeURIComponent(message)}`;
 }
