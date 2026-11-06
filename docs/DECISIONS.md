@@ -19,6 +19,8 @@ Dokumen ini mencatat semua keputusan teknis, pilihan arsitektur, dan penyesuaian
 - **Manipulasi Gambar**: `sharp` `0.35.5`.
 - **Testing**: `vitest` `5.1.0` (unit test) dan `@playwright/test` `1.65.0` (E2E test).
 - **Icons & UI Helpers**: `lucide-react` `1.70.0`, `clsx`, `tailwind-merge`, `class-variance-authority`.
+- **Server Guard**: `server-only` `^0.0.1` (memastikan `db.ts` dan fungsi server tidak dapat diimpor ke komponen client).
+
 
 ---
 
