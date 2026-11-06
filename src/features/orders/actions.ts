@@ -173,3 +173,53 @@ export async function createOrderAction(
     return { success: false, error: errorMsg };
   }
 }
+
+export async function updateOrderStatusAction(
+  orderId: string,
+  status: "BARU" | "DIPROSES" | "SELESAI" | "BATAL"
+) {
+  const { requireAdmin } = await import("@/lib/auth");
+  const { revalidatePath } = await import("next/cache");
+  await requireAdmin();
+
+  try {
+    await db.order.update({
+      where: { id: orderId },
+      data: { status },
+    });
+
+    revalidatePath("/admin/pesanan");
+    revalidatePath("/admin");
+
+    return { success: true };
+  } catch (err) {
+    const errorMsg =
+      err instanceof Error ? err.message : "Gagal memperbarui status pesanan";
+    return { success: false, error: errorMsg };
+  }
+}
+
+export async function deleteOldOrdersAction(olderThanDays = 90) {
+  const { requireAdmin } = await import("@/lib/auth");
+  const { revalidatePath } = await import("next/cache");
+  await requireAdmin();
+
+  try {
+    const thresholdDate = new Date();
+    thresholdDate.setDate(thresholdDate.getDate() - olderThanDays);
+
+    const deleted = await db.order.deleteMany({
+      where: {
+        createdAt: { lt: thresholdDate },
+      },
+    });
+
+    revalidatePath("/admin/pesanan");
+    return { success: true, count: deleted.count };
+  } catch (err) {
+    const errorMsg =
+      err instanceof Error ? err.message : "Gagal menghapus pesanan lawas";
+    return { success: false, error: errorMsg };
+  }
+}
+
