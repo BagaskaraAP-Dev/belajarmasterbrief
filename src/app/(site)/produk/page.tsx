@@ -1,8 +1,23 @@
 import { getCategories, getProducts } from "@/features/products/queries";
+import { getStoreSettings } from "@/features/settings/queries";
 import { ProductCard } from "@/components/site/product-card";
 import { CatalogFilters } from "@/components/site/catalog-filters";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getStoreSettings();
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://contoh-umkm.my.id";
+
+  return {
+    title: `Katalog Produk & Menu - ${settings.name}`,
+    description: `Jelajahi seluruh daftar menu kuliner dan produk pilihan dari ${settings.name}. Pesan mudah dan cepat via WhatsApp.`,
+    alternates: {
+      canonical: `${siteUrl}/produk`,
+    },
+  };
+}
 
 type SearchParams = Promise<{
   kategori?: string;

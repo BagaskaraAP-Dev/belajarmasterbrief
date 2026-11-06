@@ -1,15 +1,49 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { getProductBySlug, getRelatedProducts } from "@/features/products/queries";
 import { getStoreSettings } from "@/features/settings/queries";
 import { ProductGallery } from "@/components/site/product-gallery";
 import { ProductOrderBox } from "@/components/site/product-order-box";
 import { ProductCard } from "@/components/site/product-card";
+import { ProductJsonLd, BreadcrumbJsonLd } from "@/components/site/json-ld";
 import { ChevronRight, ShieldCheck, Truck, RefreshCcw } from "lucide-react";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
 };
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const [product, settings] = await Promise.all([
+    getProductBySlug(slug),
+    getStoreSettings(),
+  ]);
+
+  if (!product) {
+    return { title: "Produk Tidak Ditemukan" };
+  }
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://contoh-umkm.my.id";
+  const productUrl = `${siteUrl}/produk/${product.slug}`;
+  const mainImage = product.images[0]?.path
+    ? `${siteUrl}${product.images[0].path}`
+    : `${siteUrl}/og-default.jpg`;
+
+  return {
+    title: `${product.name} - ${settings.name}`,
+    description: product.description.slice(0, 155),
+    alternates: {
+      canonical: productUrl,
+    },
+    openGraph: {
+      title: `${product.name} - ${settings.name}`,
+      description: product.description.slice(0, 155),
+      url: productUrl,
+      images: [{ url: mainImage, alt: product.name }],
+    },
+  };
+}
 
 export default async function ProductDetailPage({ params }: PageProps) {
   const { slug } = await params;
@@ -23,10 +57,33 @@ export default async function ProductDetailPage({ params }: PageProps) {
     notFound();
   }
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://contoh-umkm.my.id";
+  const productUrl = `${siteUrl}/produk/${product.slug}`;
   const relatedProducts = await getRelatedProducts(product.id, product.categoryId, 4);
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-12 sm:space-y-16">
+      {/* Structured Data */}
+      <ProductJsonLd
+        name={product.name}
+        description={product.description}
+        image={
+          product.images[0]?.path
+            ? `${siteUrl}${product.images[0].path}`
+            : null
+        }
+        price={product.price}
+        isAvailable={product.isAvailable}
+        url={productUrl}
+      />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Beranda", url: siteUrl },
+          { name: "Katalog", url: `${siteUrl}/produk` },
+          { name: product.name, url: productUrl },
+        ]}
+      />
+
       {/* Breadcrumb */}
       <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs sm:text-sm text-stone-500 overflow-x-auto whitespace-nowrap">
         <Link href="/" className="hover:text-amber-700 transition">

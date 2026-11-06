@@ -1,5 +1,12 @@
 import type { Metadata } from "next";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-sans",
+});
 
 export const metadata: Metadata = {
   title: "[ISI_NAMA_USAHA] - Website Resmi",
@@ -12,10 +19,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id">
-      <body className="min-h-screen bg-stone-50 text-stone-900 antialiased">
+    <html lang="id" className={plusJakartaSans.variable}>
+      <body className="min-h-screen bg-stone-50 text-stone-900 font-sans antialiased">
         {children}
       </body>
     </html>
   );
 }
+

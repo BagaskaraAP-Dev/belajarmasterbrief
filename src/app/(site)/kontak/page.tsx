@@ -1,10 +1,26 @@
 import { getStoreSettings } from "@/features/settings/queries";
 import { MapsViewer } from "@/components/site/maps-viewer";
+import { LocalBusinessJsonLd } from "@/components/site/json-ld";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
+import type { Metadata } from "next";
 import { MapPin, Clock, Phone, MessageCircle, ExternalLink } from "lucide-react";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getStoreSettings();
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://contoh-umkm.my.id";
+
+  return {
+    title: `Kontak & Alamat Lokasi - ${settings.name}`,
+    description: `Hubungi kami via WhatsApp di ${settings.waNumber} atau kunjungi gerai kami di ${settings.address || "kota kami"}.`,
+    alternates: {
+      canonical: `${siteUrl}/kontak`,
+    },
+  };
+}
 
 export default async function ContactPage() {
   const settings = await getStoreSettings();
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://contoh-umkm.my.id";
 
   const waUrl = buildWhatsAppUrl(
     settings.waNumber,
@@ -13,6 +29,15 @@ export default async function ContactPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-16 space-y-12">
+      <LocalBusinessJsonLd
+        name={settings.name}
+        description={settings.tagline}
+        telephone={settings.waNumber}
+        address={settings.address}
+        url={`${siteUrl}/kontak`}
+        openHours={settings.openHours}
+      />
+
       {/* Title */}
       <div className="text-center max-w-2xl mx-auto space-y-3">
         <h1 className="text-3xl sm:text-5xl font-extrabold text-stone-900 tracking-tight">

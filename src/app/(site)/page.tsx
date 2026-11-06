@@ -1,8 +1,10 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { getStoreSettings } from "@/features/settings/queries";
 import { getFeaturedProducts } from "@/features/products/queries";
 import { getVisibleTestimonials } from "@/features/testimonials/queries";
 import { ProductCard } from "@/components/site/product-card";
+import { LocalBusinessJsonLd } from "@/components/site/json-ld";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import {
   ShoppingBag,
@@ -16,6 +18,37 @@ import {
   MessageCircle,
 } from "lucide-react";
 
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getStoreSettings();
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://contoh-umkm.my.id";
+
+  return {
+    title: `${settings.name} - Kuliner & Makanan Ringan Berkualitas`,
+    description:
+      settings.tagline ||
+      "Pesan aneka menu kuliner nusantara berkualitas tinggi langsung via WhatsApp. Bahan segar pilihan, resep otentik, dan higienis.",
+    alternates: {
+      canonical: siteUrl,
+    },
+    openGraph: {
+      title: settings.name,
+      description: settings.tagline || "Katalog produk kuliner khas berkualitas",
+      url: siteUrl,
+      siteName: settings.name,
+      images: [
+        {
+          url: `${siteUrl}/og-default.jpg`,
+          width: 1200,
+          height: 630,
+          alt: settings.name,
+        },
+      ],
+      locale: "id_ID",
+      type: "website",
+    },
+  };
+}
+
 export default async function HomePage() {
   const [settings, featuredProducts, testimonials] = await Promise.all([
     getStoreSettings(),
@@ -23,6 +56,7 @@ export default async function HomePage() {
     getVisibleTestimonials(),
   ]);
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://contoh-umkm.my.id";
   const waHeroUrl = buildWhatsAppUrl(
     settings.waNumber,
     `Halo ${settings.name}, saya ingin memesan produk kuliner pilihan Anda.`
@@ -30,6 +64,15 @@ export default async function HomePage() {
 
   return (
     <div className="space-y-16 sm:space-y-24 pb-16">
+      <LocalBusinessJsonLd
+        name={settings.name}
+        description={settings.tagline}
+        telephone={settings.waNumber}
+        address={settings.address}
+        url={siteUrl}
+        openHours={settings.openHours}
+      />
+
       {/* 1. Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-b from-amber-500/10 via-amber-500/5 to-transparent pt-12 pb-16 sm:pt-20 sm:pb-24 border-b border-stone-200">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
