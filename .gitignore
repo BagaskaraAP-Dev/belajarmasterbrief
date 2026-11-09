@@ -1,46 +1,5 @@
-# Node dependencies
-node_modules/
-.pnpm-store/
-
-# Next.js build output
-.next/
-out/
-build/
-dist/
-
-# Prisma generated client
-src/generated/prisma/
-
-# Uploads volume
-uploads/
-/app/uploads/
-
-# Environment files
-.env
-.env.local
-.env.production
-!.env.example
-
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
+/.env
+/vendor/
+/.idea/
+/.vscode/
 *.log
-
-# Testing
-test-results/
-playwright-report/
-coverage/
-
-# TypeScript cache
-*.tsbuildinfo
-
-# Backups
-backups/
-
-# OS and IDE files
-.DS_Store
-Thumbs.db
-.vscode/
-.idea/

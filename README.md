@@ -1,125 +1,88 @@
-# 🚀 Belajar Master Brief & Web Full-Stack Development (Next.js 16 + Docker)
+# 🚀 Enterprise PHP 8.3 & Docker Compose — Lab Belajar Mandiri
 
-[![Next.js 16](https://img.shields.io/badge/Next.js-16.4.5-black?style=flat-square&logo=next.js)](https://nextjs.org/)
-[![React 19](https://img.shields.io/badge/React-19.3.1-blue?style=flat-square&logo=react)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.9.3-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
-[![Tailwind CSS 4](https://img.shields.io/badge/Tailwind-4.3.4-38bdf8?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
-[![Docker](https://img.shields.io/badge/Docker-Multi--stage-2496ed?style=flat-square&logo=docker)](https://www.docker.com/)
-[![PostgreSQL 18](https://img.shields.io/badge/PostgreSQL-18.6-336791?style=flat-square&logo=postgresql)](https://www.postgresql.org/)
-[![Prisma 7](https://img.shields.io/badge/Prisma-7.10.1-2d3748?style=flat-square&logo=prisma)](https://www.prisma.io/)
-[![Better Auth](https://img.shields.io/badge/Auth-Better_Auth_1.7-purple?style=flat-square)](https://better-auth.com/)
-
-> **"Terus belajar dan mendalami dunia teknologi agar semakin pintar, adaptif, dan mampu membangun solusi digital kelas dunia."**
+> **Status:** Sedang Aktif Dipelajari & Dikembangkan  
+> **Author:** Bagaskara Amukti Palapa  
+> **Fokus Skill:** Modern PHP 8.3, Docker Compose Architecture, Container Security & High-Performance Caching
 
 ---
 
-## 📌 Informasi Repository & Pembelajar
+## 📌 Tentang Proyek Ini
 
-- **Author / Developer:** Bagaskara Amukti Palapa ([@BagaskaraAP-Dev](https://github.com/BagaskaraAP-Dev))
-- **Tanggal Dibuat:** Jumat, 6 November 2026
-- **Waktu Pembuatan:** 18:36:03 WIB (GMT+7)
-- **Topik Pembelajaran:** Penyusunan Dokumen Rekayasa Perangkat Lunak (*Master Brief*) dan Implementasi Aplikasi Web Full-Stack Modern (*Production-Ready Architecture*).
+Repositori ini adalah lingkungan belajar (*sandbox & production-grade lab*) yang saya buat untuk mendalami arsitektur **Full-Stack Backend Modern** menggunakan **Docker Compose**, menjembatani latar belakang saya di bidang **Cybersecurity / Web Security** dengan rekayasa perangkat lunak enterprise.
 
----
-
-## 📖 Tentang Proyek Ini
-
-Repository ini merupakan dokumentasi komprehensif dan kode sumber hasil belajar merancang serta membangun aplikasi web **Full-Stack UMKM Modern**. Proyek ini diawali dari pembuatan dokumen **Master Brief** (spesifikasi arsitektur menyeluruh) hingga eksekusi kode nyata dari nol (Milestone 0 sampai Milestone 7).
-
-### 💡 Konsep Utama yang Dipelajari:
-1. **Master Brief Engineering**: Belajar menyusun spesifikasi kebutuhan bisnis, non-fungsional, batasan teknologi, skema basis data, dan aturan kerja agent/tim secara terstruktur sebelum baris kode pertama ditulis.
-2. **Next.js 16 App Router & Turbopack**: Mempelajari Server Components, Server Actions mutasi data, dynamic params as Promise, serta konvensi baru `proxy.ts` (menggantikan middleware lama).
-3. **Multi-stage Docker Architecture**: Membangun kontainerisasi efisien (`base` → `deps` → `dev` → `builder` → `migrator` → `runner`), menghasilkan image produksi yang aman, non-root (`uid 1001`), dan berukuran ramping (<250 MB).
-4. **PostgreSQL 18 & Prisma ORM 7**: Integrasi driver adapter native `@prisma/adapter-pg` dan skema database relasional modern.
-5. **Keamanan Web (OWASP Top 10)**: Content Security Policy (CSP) ketat, sliding window rate limiting per IP, perlindungan anti-spam honeypot, pencegahan path traversal, sanitasi metadata EXIF/GPS foto dengan Sharp, dan kepatuhan privasi data (UU PDP).
-6. **Reverse Proxy & HTTPS Otomatis**: Integrasi Caddy Server untuk penanganan sertifikat SSL Let's Encrypt / ZeroSSL otomatis dan kompresi zstd/gzip.
-7. **CI/CD & Otomasi DevOps**: GitHub Actions pipeline untuk linting, typechecking, unit testing (Vitest), dan uji coba build image Docker.
+Di sini, saya tidak menggunakan web server *monolitik* bawaan (seperti XAMPP biasa), melainkan mengisolasi setiap tanggung jawab sistem ke dalam kontainer terpisah yang saling berkomunikasi melalui *private bridge network*.
 
 ---
 
-## 🛠️ Stack Teknologi (Dicek per 6 November 2026)
+## 🏗️ Arsitektur Sistem
 
-| Komponen | Teknologi | Versi | Peran |
-| :--- | :--- | :--- | :--- |
-| **Framework** | Next.js (App Router) | `16.4.5` | Frontend + Backend Server Actions |
-| **UI Library** | React | `19.3.1` | Komponen interaktif & Server Components |
-| **Bahasa** | TypeScript | `5.9.3` | Strict type checking & keandalan kode |
-| **Styling** | Tailwind CSS v4 | `4.3.4` | Konfigurasi CSS-first (`@theme` tanpa file config js) |
-| **Database** | PostgreSQL | `18.6` | Penyimpanan data utama (Postgres Alpine) |
-| **ORM** | Prisma ORM | `7.10.1` | Pemetaan relasional & migrasi otomatis |
-| **Autentikasi** | Better Auth | `1.7.18` | Login admin, manajemen sesi, rate limiting |
-| **Validasi** | Zod | `4.6.7` | Validasi skema formulir klien & server |
-| **Manipulasi Media** | Sharp | `0.35.5` | Re-encode WebP & pembuangan metadata privasi |
-| **Reverse Proxy** | Caddy Server | `2.x Alpine` | Reverse proxy internal & SSL TLS otomatis |
-| **Testing** | Vitest & Playwright | `5.1.0` / `1.65` | Unit testing & E2E integration testing |
-| **Kontainer** | Docker & Compose | Multi-stage | Orkesstrasi 4 service: `db`, `migrate`, `web`, `caddy` |
-
----
-
-## 📂 Struktur Proyek
-
-```
-.
-├── .github/workflows/    # CI Pipeline (ESLint, Typecheck, Vitest, Docker Build)
-├── docs/
-│   ├── BRIEF.md          # Dokumen Master Brief spesifikasi UMKM lengkap
-│   ├── DECISIONS.md      # Catatan keputusan arsitektur (Architecture Decision Log)
-│   └── DEPLOY.md         # Panduan deployment VPS Ubuntu + Docker langkah demi langkah
-├── prisma/
-│   ├── schema.prisma     # Skema database Prisma ORM 7
-│   ├── migrations/       # Riwayat migrasi PostgreSQL
-│   └── seed.ts           # Seeding data toko, kategori, produk, dan admin awal
-├── public/               # Asset statis, favicon, og-image default
-├── scripts/
-│   ├── backup.sh         # Skrip pencadangan PostgreSQL (pg_dump gz) + folder uploads
-│   ├── migrate.sh        # Skrip inisialisasi migrasi database di container
-│   └── restore.sh        # Skrip pemulihan database dan uploads
-├── src/
-│   ├── app/
-│   │   ├── (site)/       # Halaman publik: Beranda, Katalog, Detail, Keranjang, Kontak, Tentang
-│   │   ├── admin/        # Dashboard admin terlindungi Better Auth
-│   │   ├── api/          # Route handlers: /api/auth, /api/health, /api/media
-│   │   └── proxy.ts      # Proxy routing proteksi admin Next.js 16
-│   ├── components/       # Komponen UI katalog, produk, keranjang, admin manager
-│   ├── features/         # Logika fitur (actions, queries, zod schema)
-│   └── lib/              # Utilitas database, auth, format rupiah, WhatsApp, rate limiter
-├── tests/
-│   ├── unit/             # Unit tests logika harga, WhatsApp, format, upload, rate limit
-│   └── e2e/              # E2E Playwright tests
-├── compose.yaml          # Konfigurasi bersama service Docker
-├── compose.override.yaml # Konfigurasi hot reload untuk development
-├── compose.prod.yaml     # Hardening & isolasi untuk lingkungan produksi
-├── Caddyfile             # Konfigurasi reverse proxy & HTTPS Caddy
-└── Dockerfile            # Multi-stage build (base, deps, dev, builder, migrator, runner)
+```text
+Browser User (Host: http://localhost:8080)
+      │
+      ▼ (Port 8080)
+[1. Nginx 1.27 Alpine] ── (Reverse Proxy & Security Headers)
+      │
+      │ Teruskan request PHP via fastcgi_pass app:9000
+      ▼
+[2. PHP 8.3-FPM Alpine] ── (Custom Dockerfile + Composer + PDO + Ext-Redis)
+      ├── PDO pgsql  ──► [3. PostgreSQL 16] (Relational Persistence & Audit Trail)
+      └── Ext-Redis  ──► [4. Redis 7 Alpine] (In-Memory Atomic Counter & Cache Layer)
 ```
 
----
-
-## ⚡ Perintah Penting (Docker Standar)
-
-| Tujuan | Perintah |
-| :--- | :--- |
-| **Menjalankan Dev (Hot Reload)** | `docker compose up --watch` |
-| **Migrasi Database Baru** | `docker compose run --rm web pnpm prisma migrate dev --name <nama>` |
-| **Seed Data Contoh** | `docker compose run --rm web pnpm db:seed` |
-| **Menjalankan Unit Test** | `docker compose run --rm web pnpm test` |
-| **Pengecekan Lint & TypeScript** | `docker compose run --rm web pnpm lint && docker compose run --rm web pnpm typecheck` |
-| **Menjalankan Produksi (Caddy + SSL)** | `docker compose -f compose.yaml -f compose.prod.yaml up -d --build` |
-| **Cadangkan Database & Uploads** | `./scripts/backup.sh` |
-| **Pulihkan Data (Restore)** | `./scripts/restore.sh <path_file.sql.gz> [path_uploads.tar.gz]` |
+### Komponen Utama:
+1. **Nginx 1.27 (`web`):** Pintu masuk utama yang melindungi backend, memfilter request, menangani *security headers*, dan me-route file statis tanpa membebani PHP.
+2. **PHP 8.3-FPM (`app`):** Runtime backend modern dengan *strict types*, *prepared statements* (anti-SQLi), dan driver database/cache yang terisolasi.
+3. **PostgreSQL 16 (`db`):** Database relasional untuk menyimpan tabel audit log secara permanen melalui *named volume* (`postgres_data`).
+4. **Redis 7 (`redis`):** *In-memory storage* untuk pemrosesan super cepat (*page view hit counter* dan *cache*).
 
 ---
 
-## 📚 Dokumen Panduan & Rekayasa Lengkap
+## 🚀 Cara Menjalankan Secara Offline / Lokal
 
-Pelajari dokumentasi teknis mendalam yang ada di dalam repository ini:
-- 📑 [Master Brief Spesifikasi Lengkap (docs/BRIEF.md)](docs/BRIEF.md)
-- 🧠 [Catatan Keputusan Arsitektur & Log Teknis (docs/DECISIONS.md)](docs/DECISIONS.md)
-- 🚀 [Panduan Deployment VPS Ubuntu Produksi (docs/DEPLOY.md)](docs/DEPLOY.md)
+Seluruh dependensi telah disiapkan dalam kontainer sehingga dapat dijalankan 100% secara offline di laptop:
+
+1. **Pastikan Docker Desktop aktif di Windows.**
+2. **Masuk ke folder proyek:**
+   ```bash
+   cd "C:\Users\User\OneDrive\Desktop\belajarmasterbrief"
+   ```
+3. **Deploy seluruh container:**
+   ```bash
+   docker compose up -d --build
+   ```
+4. **Buka di browser:**
+   👉 [http://localhost:8080](http://localhost:8080)
 
 ---
 
-## 🌟 Pesan Belajar
+## 🛠️ Perintah Kontrol untuk Pembelajaran
 
-> *"Kunci menjadi hebat dalam dunia teknologi bukanlah menghafal seluruh sintaks, melainkan memahami arsitektur, tekun memecahkan masalah, dan tidak pernah berhenti bereksplorasi."*  
-> **— Bagaskara Amukti Palapa (Nov 2026)**
+* **Cek status & healthcheck seluruh kontainer:**
+  ```bash
+  docker compose ps
+  ```
+* **Melihat log real-time saat testing request:**
+  ```bash
+  docker compose logs -f
+  ```
+* **Masuk ke terminal kontainer PHP (untuk run composer / debug):**
+  ```bash
+  docker compose exec app sh
+  ```
+* **Mematikan sistem (data database & redis tetap tersimpan):**
+  ```bash
+  docker compose down
+  ```
+* **Reset total (menghapus container beserta volume data):**
+  ```bash
+  docker compose down -v
+  ```
+
+---
+
+## 🎯 Target Pembelajaran Selanjutnya:
+- [x] Konfigurasi multi-container bridge network & healthcheck dependency.
+- [x] Audit trail logging otomatis ke PostgreSQL via PDO.
+- [x] Atomic view counter via in-memory Redis.
+- [ ] Menambahkan *Asynchronous Worker Container* untuk antrean pengiriman notifikasi.
+- [ ] Mengintegrasikan PHPUnit / Pest untuk automated unit testing di dalam container.

@@ -1,40 +1,85 @@
-name: umkm
-
 services:
-  db:
-    image: postgres:18-alpine
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  # 1. Reverse Proxy & Web Server (Nginx)
+  web:
+    image: nginx:1.27-alpine
+    container_name: enterprise_web
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8080}:80"
     volumes:
-      - pgdata:/var/lib/postgresql
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
-      interval: 5s
-      retries: 10
+      - ./src:/var/www/html:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - app
+    networks:
+      - enterprise_net
 
-  migrate:
+  # 2. PHP 8.3 FPM Application Runtime
+  app:
     build:
       context: .
-      target: migrator
-    env_file: .env
+      dockerfile: docker/php/Dockerfile
+    container_name: enterprise_app
+    restart: unless-stopped
+    volumes:
+      - ./src:/var/www/html
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini:ro
+    environment:
+      DB_HOST: ${DB_HOST:-db}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_DATABASE: ${DB_DATABASE:-enterprise_db}
+      DB_USERNAME: ${DB_USERNAME:-bagas}
+      DB_PASSWORD: ${DB_PASSWORD:-secretpassword}
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
     depends_on:
       db:
         condition: service_healthy
-    restart: "no"
+      redis:
+        condition: service_healthy
+    networks:
+      - enterprise_net
 
-  web:
-    build:
-      context: .
-      target: runner
-    env_file: .env
+  # 3. Relational Database (PostgreSQL 16)
+  db:
+    image: postgres:16-alpine
+    container_name: enterprise_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-enterprise_db}
+      POSTGRES_USER: ${DB_USERNAME:-bagas}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secretpassword}
     volumes:
-      - uploads:/app/uploads
-    depends_on:
-      migrate:
-        condition: service_completed_successfully
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-bagas} -d ${DB_DATABASE:-enterprise_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - enterprise_net
+
+  # 4. In-Memory Cache & Message Broker (Redis 7)
+  redis:
+    image: redis:7-alpine
+    container_name: enterprise_redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - enterprise_net
 
 volumes:
-  pgdata: {}
-  uploads: {}
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  enterprise_net:
+    driver: bridge
